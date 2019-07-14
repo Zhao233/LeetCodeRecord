@@ -1,6 +1,14 @@
 import java.lang.Exception
 
 object Test {
+  val FLAG_INIT = 0
+  val FLAG_NUM_START = 1
+  val FLAG_NUM = 2
+
+  val SIGN_PLUS = 1
+  val SIGN_MINUS = 2
+  
+
   def main(args: Array[String]) {
     val test1 = "42";
     val test2 = "   -42";
@@ -17,117 +25,93 @@ object Test {
   }
 
   def myAtoi(str: String): Int = {
-      /**
-        * 当前的状态
-        * 0 初始状态
-        * 2 数字
-        * 3 数字的开始
-        * */
-      var flag_1: Int = 0;
-
-      /**
-        * 0: 初始值
-        * 1: 正数
-        * 2: 负数
-        **/
-      var sign: Int = 0;
-
-      var num: String = "";
-
-      for (i <- 0 until str.length) {
-        val index_char = str.charAt(i);
-
-        index_char match {
-
-            //空格
-            case ' ' =>
-              if(flag_1 == 2){
-                return getNumber(num,sign);
-              }
-
-              if(flag_1 == 3){
-                return getNumber(num, sign);
-              }
-
-            //运算符
-            case '+' =>
-              if(flag_1 == 2){
-                return getNumber(num,sign);
-              }
-
-              if(flag_1 == 3){
-                return getNumber(num, sign);
-              }
-
-              if(flag_1 == 0){
-                sign = 1;
-
-                flag_1 = 3;
-              }
-
-            case '-' =>
-              if(flag_1 == 2){
-                return getNumber(num,sign);
-              }
-
-              if(flag_1 == 3){
-                return getNumber(num, sign);
-              }
-
-              if(flag_1 == 0){
-                sign = 2;
-
-                flag_1 = 3;
-              }
-
-            //数字
-            case index_char if (index_char >= 48 && index_char <= 57) =>
-              if(flag_1 == 0){
-                if(index_char == '0'){
-
-                }
-
-                //num+=index_char;
-
-                flag_1 = 3;
-              }
-
-              if(flag_1 == 2){
-                num+=index_char;
-
-              }
-
-              if(flag_1 == 3){
-                if(index_char == '0'){
-
-                } else {
-                  num+=index_char;
-
-                  flag_1 = 2;
-                }
-              }
+    /**
+      * 当前的状态
+      * 0 初始状态
+      * 1 数字
+      * 2 数字的开始
+      * */
+    var flag: Int = 0;
 
 
-            case _ =>
-              if(flag_1 == 2){
-                return getNumber(num,sign);
-              }
+    /**
+      * 0: 初始值
+      * 1: 正数
+      * 2: 负数
+      **/
+    var sign: Int = 0;
 
-              if(flag_1 == 3){
-                return getNumber(num, sign);
-              }
+    var num: String = "";
 
-              if(flag_1 == 0){
-                return 0;
-              }
-        }
+    for (i <- 0 until str.length) {
+      val index_char = str.charAt(i);
 
+      index_char match {
+
+        //空格
+        case ' ' =>
+          if (flag == FLAG_NUM) return getNumber(num, sign)
+
+          if(flag == FLAG_NUM_START) return getNumber(num,sign)
+
+        //运算符
+        case '+' =>
+          if(flag == FLAG_NUM) return getNumber(num,sign);
+
+          if(flag == FLAG_NUM_START) return getNumber(num, sign);
+
+          if (flag == FLAG_INIT) {
+            sign = SIGN_PLUS
+            flag = FLAG_NUM_START
+          }
+        case '-' =>
+          if(flag == FLAG_NUM) return getNumber(num,sign);
+
+          if(flag == FLAG_NUM_START) return getNumber(num, sign);
+
+          if(flag == FLAG_INIT){
+            sign = SIGN_MINUS;
+            flag = FLAG_NUM_START;
+          }
+
+        //数字
+        case index_char if (index_char >= 48 && index_char <= 57) =>
+          if(flag == FLAG_INIT){
+            if(index_char == '0'){
+
+            }
+
+            flag = FLAG_NUM_START;
+          }
+
+          if(flag == FLAG_NUM){
+            num+=index_char;
+
+          }
+
+          if(flag == FLAG_NUM_START){
+            if(index_char == '0'){
+
+            } else {
+              num+=index_char;
+
+              flag = FLAG_NUM;
+            }
+          }
+
+
+        case _ =>
+          if(flag == FLAG_NUM) return getNumber(num,sign);
+
+          if(flag == FLAG_NUM_START) return getNumber(num, sign);
+
+          if (flag == FLAG_INIT) return 0
       }
-      //[−231,  231 − 1]//[−231,  231 − 1]
+
+    }
 
 
-
-      return getNumber(num, sign)
+    return getNumber(num, sign)
   }
 
   def getNumber(str: String, sign: Int): Int = {
@@ -136,7 +120,7 @@ object Test {
     if(str.length == 0){
       return 0;
     }
-    
+
     sign match {
       case 0 =>
           try{
@@ -145,14 +129,14 @@ object Test {
             case e : Exception => return 2147483647
           }
       // +
-      case 1 =>
+      case SIGN_PLUS =>
         try{
           return str.toInt
         } catch {
           case e : Exception => return 2147483647
         }
       // -
-      case 2 =>
+      case SIGN_MINUS =>
         try{
           return -str.toInt
         } catch {
