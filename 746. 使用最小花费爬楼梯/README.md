@@ -34,13 +34,10 @@ nums
 题目已经告诉我们,第一步可以选择第一阶或者第二阶,所以程序的边界就是opt(0) = nums(0), opt(1) = nums(1)
 
 ### 4.描述状态转移方程
-$$
-\begin{cases}
-opt(0) = nums(0)\\
-opt(1) = nums(1)\\
-opt(i) = min{ opt(i-1), opt(i-2) }+nums(i)\\
-\end{cases}
-$$
+
+1. opt(0) = nums(0)
+2. opt(1) = nums(1)
+2. opt(i) = min{ opt(i-1), opt(i-2) }+nums(i)
 
 ### 5.代码实现
 [递归实现](https://github.com/Zhao233/LeetCodeRecord/blob/master/746.%20%E4%BD%BF%E7%94%A8%E6%9C%80%E5%B0%8F%E8%8A%B1%E8%B4%B9%E7%88%AC%E6%A5%BC%E6%A2%AF/scala_recursion.scala)            
